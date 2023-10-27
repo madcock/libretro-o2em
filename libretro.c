@@ -864,7 +864,21 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
    memset(info, 0, sizeof(*info));
 
    info->timing.fps               = (evblclk == EVBLCLK_NTSC) ? 60 : 50;
+   
+#if !defined(SF2000)
    info->timing.sample_rate       = AUDIO_SAMPLERATE;
+#else
+   log_cb(RETRO_LOG_DEBUG, "[retro_get_system_av_info] sameple_rate = %d\n", AUDIO_SAMPLERATE);
+   log_cb(RETRO_LOG_DEBUG, "[DIRTY HACK] forcing sameple_rate to 11025.\n");
+   
+   /* NOTE:
+   
+      AUDIO_SAMPLERATE = 35200
+   
+      SF2000 can only handle 11025, 22050, and 44100.
+   */
+   info->timing.sample_rate    = 11025;
+#endif
 
    if (crop_overscan)
    {
